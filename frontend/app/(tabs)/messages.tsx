@@ -8,10 +8,10 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 
-export default function HomeScreen() {
+export default function Messages() {
   return (
     <View style={styles.container}>
-      <ThemedText>Home Screen</ThemedText>
+      <ThemedText>Messages Screen</ThemedText>
     </View>
   );
 }
@@ -23,4 +23,3 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
