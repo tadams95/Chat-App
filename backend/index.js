@@ -1,17 +1,23 @@
 const express = require("express");
+const http = require("http");
+const socketIo = require("socket.io");
+
 const app = express();
-const port = 3000;
-const http = require("http").Server(app);
-const cors = require("cors");
+const server = http.createServer(app);
+const io = socketIo(server);
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cors());
+io.on("connection", (socket) => {
+  console.log("New client connected");
 
-app.get("/api", (req, res) => {
-  console.log(req, res);
+  socket.on("getAllGroups", () => {
+    const groups = ["Group1", "Group2", "Group3"]; // Example groups
+    socket.emit("groupList", groups);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
 });
 
-http.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+const PORT = process.env.PORT || 4000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
