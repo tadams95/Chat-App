@@ -17,9 +17,7 @@ import { ThemedText } from "@/components/ThemedText";
 import ChatComponent from "@/components/ChatComponent";
 import NewGroupModal from "../../components/Modal";
 import { useNavigation } from "@react-navigation/native";
-import io from "socket.io-client";
-
-const socket = io("http://localhost:4000");
+import socket from "@/utils";
 
 export default function Chat() {
   const {
@@ -37,12 +35,21 @@ export default function Chat() {
   useEffect(() => {
     socket.emit("getAllGroups");
 
-    // socket.on("groupList", (groups) => {
-    //   console.log(groups, "hhhhhhhhhhhhhhhhhhhhhhh");
-    //   setAllChatRooms(groups);
-    // });
-  }, [socket]);
+    socket.on("groupList", (groups) => {
+      console.log(groups);
+      setAllChatRooms(groups);
+    });
 
+    // Listen for new chat room event
+    socket.on("newGroup", (newGroup) => {
+      setAllChatRooms((prevChatRooms) => [...prevChatRooms, newGroup]);
+    });
+
+    return () => {
+      socket.off("groupList");
+      socket.off("newGroup");
+    };
+  }, [socket]);
   function handleLogout() {
     setCurrentUser("");
     setShowLoginView(false);
@@ -67,7 +74,7 @@ export default function Chat() {
           <FlatList
             data={allChatRooms}
             renderItem={({ item }) => <ChatComponent item={item} />}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
           />
         ) : null}
       </View>

@@ -15,13 +15,19 @@ io.on("connection", (socket) => {
     socket.emit("groupList", chatgroups);
   });
 
-  socket.on("createRoom", (groupName) => {
-    console.log(`New group created: ${groupName}`);
-    chatgroups.push(groupName); // Add the new group to the chatgroups array
-    io.emit("groupList", chatgroups); // Emit the updated group list to all clients
+  socket.on("getAllGroups", () => {
+    socket.emit("groupList", chatgroups);
   });
 
-  console.log("Chatgroups: ", chatgroups);
+  socket.on("createRoom", (groupName) => {
+    console.log(`New group created: ${groupName}`);
+    chatgroups.unshift({
+      id: chatgroups.length + 1,
+      groupName,
+      messages: [],
+    });
+    io.emit("groupList", chatgroups); // Emit the updated group list to all clients
+  });
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
