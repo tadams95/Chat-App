@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   View,
   ImageBackground,
@@ -6,15 +6,62 @@ import {
   Pressable,
   StyleSheet,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Alert,
+  Keyboard,
 } from "react-native";
 import { ThemedText } from "@/components/ThemedText";
 import { GlobalContext } from "@/context/index";
 import homeImage from "../../assets/images/home-image.jpg";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen() {
-  const { showLoginView, setShowLoginView } = useContext(GlobalContext);
-  const { currentUserName, setCurrentUserName } = useContext(GlobalContext);
+  const {
+    showLoginView,
+    setShowLoginView,
+    currentUserName,
+    setCurrentUserName,
+    currentUser,
+    setCurrentUser,
+    allUsers,
+    setAllUsers,
+  } = useContext(GlobalContext);
+
+  const navigation = useNavigation();
+
+  function handleRegisterAndSignIn(isLogin) {
+    if (currentUserName.trim() !== "") {
+      const index = allUsers.findIndex(
+        (userItem) => userItem === currentUserName
+      );
+
+      if (isLogin) {
+        if (index === -1) {
+          Alert.alert("Please register first");
+        } else {
+          setCurrentUser(currentUserName);
+        }
+      } else {
+        if (index === -1) {
+          allUsers.push(currentUserName);
+          setAllUsers(allUsers);
+          setCurrentUser(currentUserName);
+        } else {
+          Alert.alert("Already registered ! Please login");
+        }
+      }
+
+      setCurrentUserName("");
+    } else {
+      Alert.alert("User name field is empty");
+    }
+
+    Keyboard.dismiss();
+  }
+
+  useEffect(() => {
+    if (currentUser.trim() !== "") navigation.navigate("chat");
+  }, [currentUser]);
 
   return (
     <KeyboardAvoidingView
@@ -38,12 +85,18 @@ export default function HomeScreen() {
               />
             </View>
             <View style={styles.buttonWrapper}>
-              <Pressable style={styles.button}>
+              <Pressable
+                onPress={() => handleRegisterAndSignIn(false)}
+                style={styles.button}
+              >
                 <View>
                   <ThemedText style={styles.buttonText}>Register</ThemedText>
                 </View>
               </Pressable>
-              <Pressable style={styles.button}>
+              <Pressable
+                onPress={() => handleRegisterAndSignIn(true)}
+                style={styles.button}
+              >
                 <View>
                   <ThemedText style={styles.buttonText}>Login</ThemedText>
                 </View>

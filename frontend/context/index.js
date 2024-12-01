@@ -5,6 +5,8 @@ export const GlobalContext = createContext(null);
 function GlobalState({ children }) {
   const [showLoginView, setShowLoginView] = useState(false);
   const [currentUserName, setCurrentUserName] = useState("");
+  const [currentUser, setCurrentUser] = useState("");
+  const [allUsers, setAllUsers] = useState([]);
 
   return (
     <GlobalContext.Provider
@@ -13,6 +15,10 @@ function GlobalState({ children }) {
         setShowLoginView,
         currentUserName,
         setCurrentUserName,
+        currentUser,
+        setCurrentUser,
+        allUsers,
+        setAllUsers,
       }}
     >
       {children}
