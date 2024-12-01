@@ -1,31 +1,26 @@
+import React, { useContext } from "react";
 import {
-  StyleSheet,
-  Image,
-  Platform,
   View,
   ImageBackground,
-  Text,
   TextInput,
   Pressable,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform
 } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import homeImage from "../../assets/images/home-image.jpg";
-
-import { Collapsible } from "@/components/Collapsible";
-import { ExternalLink } from "@/components/ExternalLink";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { IconSymbol } from "@/components/ui/IconSymbol";
-import { useContext } from "react";
 import { GlobalContext } from "@/context/index";
+import homeImage from "../../assets/images/home-image.jpg";
 
 export default function HomeScreen() {
   const { showLoginView, setShowLoginView } = useContext(GlobalContext);
   const { currentUserName, setCurrentUserName } = useContext(GlobalContext);
 
   return (
-    <View style={styles.mainWrapper}>
+    <KeyboardAvoidingView
+      style={styles.mainWrapper}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
       <ImageBackground source={homeImage} style={styles.homeImage} />
       <View style={styles.content}>
         {showLoginView ? (
@@ -39,7 +34,7 @@ export default function HomeScreen() {
                 placeholder="Enter your User Name"
                 style={styles.loginInput}
                 onChangeText={(value) => setCurrentUserName(value)}
-                value="currentUserName"
+                value={currentUserName}
               />
             </View>
             <View style={styles.buttonWrapper}>
@@ -57,10 +52,10 @@ export default function HomeScreen() {
           </View>
         ) : (
           <View style={styles.infoBlock}>
-            <ThemedText style={styles.buttonText}>
+            <ThemedText style={styles.tagline}>
               Connect, Grow and Inspire
             </ThemedText>
-            <ThemedText style={styles.buttonText}>
+            <ThemedText style={styles.subTagline}>
               Connect people around the world for free
             </ThemedText>
             <Pressable
@@ -68,19 +63,21 @@ export default function HomeScreen() {
               onPress={() => setShowLoginView(true)}
             >
               <View>
-                <ThemedText>Get Started</ThemedText>
+                <ThemedText style={styles.buttonText}>Get Started</ThemedText>
               </View>
             </Pressable>
           </View>
         )}
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   mainWrapper: {
     flex: 1,
+    backgroundColor: "#f0f0f0",
+    marginBottom: 50,
   },
   homeImage: {
     width: "100%",
@@ -92,5 +89,64 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: "100%",
+    padding: 20,
+  },
+  infoBlock: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    borderRadius: 10,
+  },
+  heading: {
+    fontSize: 25,
+    textAlign: "center",
+    marginBottom: 20,
+    fontWeight: "bold",
+    color: "white",
+  },
+  loginInputContainer: {
+    width: "100%",
+    marginBottom: 20,
+  },
+  loginInput: {
+    width: "100%",
+    padding: 10,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    backgroundColor: "white",
+    color: "black",
+  },
+  buttonWrapper: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
+  },
+  button: {
+    padding: 10,
+    backgroundColor: "#4527A0",
+    borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 5,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  tagline: {
+    fontSize: 20,
+    color: "white",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  subTagline: {
+    fontSize: 16,
+    color: "white",
+    textAlign: "center",
+    marginBottom: 20,
   },
 });
