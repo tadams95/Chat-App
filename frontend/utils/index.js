@@ -1,15 +1,15 @@
-import { Platform } from "react-native";
+// utils/index.js
 import { io } from "socket.io-client";
 
-export const BaseUrl =
-  Platform.OS === "android" ? "http://localhost:3000" : "http://10.0.2.2:3000";
-
-export const socket = io("http://10.0.2.2:4000"); // Remove trailing slash
+const SOCKET_URL = "http://127.0.0.1:4000/"; // Local server URL
+const socket = io(SOCKET_URL);
 
 socket.on("connect", () => {
-  console.log("Connected to server");
+  console.log("Connected to socket server");
 });
 
 socket.on("disconnect", () => {
-  console.log("Disconnected from server");
+  console.log("Disconnected from socket server");
 });
+
+export default socket;

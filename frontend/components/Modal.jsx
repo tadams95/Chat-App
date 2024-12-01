@@ -11,7 +11,7 @@ import {
   Keyboard,
 } from "react-native";
 import { GlobalContext } from "../context";
-import { socket } from "@/utils";
+import socket from "@/utils";
 
 const NewGroupModal = () => {
   const {
@@ -23,12 +23,11 @@ const NewGroupModal = () => {
 
   function handleCreateNewRoom() {
     console.log(currentGroupName);
-    socket.emit("createNewGroup", currentGroupName);
+    socket.emit("createRoom", currentGroupName);
     setModalVisible(false);
     setCurrentGroupName("");
     Keyboard.dismiss();
   }
-
   return (
     <Modal
       animationType="slide"
