@@ -5,7 +5,7 @@ import { GlobalContext } from "../context";
 import { useNavigation } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 
-export default function Chatcomponent({ item }) {
+export default function ChatComponent({ item }) {
   const router = useRouter();
   const [currentItem, setCurrentItem] = useState(item);
 

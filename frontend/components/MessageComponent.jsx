@@ -13,7 +13,7 @@ export default function MessageComponent({ currentUser, item }) {
             style={
               currentUserStatus
                 ? styles.messageItem
-                : [styles.messageItem, { backgroundColor: "#703efe" }]
+                : [styles.messageItem, { backgroundColor: "#4527A0" }]
             }
           >
             <Text

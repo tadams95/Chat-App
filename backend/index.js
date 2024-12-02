@@ -1,5 +1,5 @@
-const http = require("http");
 const express = require("express");
+const http = require("http");
 const socketIo = require("socket.io");
 
 const app = express();
@@ -13,11 +13,9 @@ function createUniqueId() {
 }
 
 io.on("connection", (socket) => {
-  console.log(`${socket.id} just connected`);
+  console.log("A user connected");
 
-  socket.on("getAllGroups", () => {
-    socket.emit("groupList", chatgroups);
-  });
+  socket.emit("groupList", chatgroups);
 
   socket.on("getAllGroups", () => {
     socket.emit("groupList", chatgroups);
@@ -34,30 +32,47 @@ io.on("connection", (socket) => {
   });
 
   socket.on("findGroup", (groupID) => {
-    const group = chatgroups.filter((item) => item.id === groupID);
-    socket.emit("foundGroup", group[0].messages);
+    const group = chatgroups.filter(
+      (item) => item.id === parseInt(groupID, 10)
+    );
+    if (group.length > 0) {
+      socket.emit("foundGroup", group[0].messages);
+    } else {
+      socket.emit("error", { message: "Group not found" });
+    }
   });
 
   socket.on("newChatMessage", (data) => {
-    const { currentChatMesage, groupIdentifier, currentUser, timeData } = data;
+    const { currentChatMessage, groupIdentifier, currentUser, timeData } = data;
     const filteredGroup = chatgroups.filter(
-      (item) => item.id === groupIdentifier
+      (item) => item.id === parseInt(groupIdentifier, 10)
     );
-    const newMessage = {
-      id: createUniqueId(),
-      text: currentChatMesage,
-      currentUser,
-      time: `${timeData.hr}:${timeData.mins}`,
-    };
 
-    socket.to(filteredGroup[0].groupName).emit("groupMessage", newMessage);
-    filteredGroup[0].messages.push(newMessage);
-    socket.emit("groupList", chatgroups);
-    socket.emit("foundGroup", filteredGroup[0].messages);
+    console.log("New Chat Message Data: ", data);
+    console.log("Filtered Group: ", filteredGroup);
+    if (filteredGroup.length > 0) {
+      const newMessage = {
+        id: createUniqueId(),
+        text: currentChatMessage,
+        currentUser,
+        time: `${timeData.hr}:${timeData.mins}`,
+      };
+
+      filteredGroup[0].messages.push(newMessage);
+      console.log(
+        `New message added to group ${filteredGroup[0].groupName}:`,
+        newMessage
+      );
+      io.to(filteredGroup[0].groupName).emit("groupMessage", newMessage);
+      socket.emit("groupList", chatgroups);
+      socket.emit("foundGroup", filteredGroup[0].messages);
+    } else {
+      socket.emit("error", { message: "Group not found" });
+    }
   });
 
   socket.on("disconnect", () => {
-    console.log("Client disconnected");
+    console.log("A user disconnected");
   });
 });
 

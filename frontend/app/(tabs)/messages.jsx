@@ -12,28 +12,32 @@ import {
 } from "react-native";
 import { GlobalContext } from "@/context";
 import MessageComponent from "@/components/MessageComponent";
+
 import socket from "@/utils";
 import { ThemedText } from "@/components/ThemedText";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
-export default function Messages({ navigation, route }) {
+export default function Messages() {
   const { currentGroupName, currentGroupID } = useLocalSearchParams();
   const {
     allChatMessages,
     setAllChatMessages,
     currentUser,
-    currentChatMessage,
+    currentChatMessage = "", // Add a default value to prevent undefined
     setCurrentChatMessage,
   } = useContext(GlobalContext);
 
   useEffect(() => {
     socket.emit("findGroup", currentGroupID);
     socket.on("foundGroup", (allChats) => setAllChatMessages(allChats));
-
+    socket.on("groupMessage", (newMessage) => {
+      setAllChatMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
     return () => {
       socket.off("foundGroup");
+      socket.off("groupMessage");
     };
-  }, [socket, currentGroupID]);
+  }, [currentGroupID]);
 
   function handleAddNewMessage() {
     const timeData = {
@@ -46,8 +50,8 @@ export default function Messages({ navigation, route }) {
           ? `0${new Date().getMinutes()}`
           : new Date().getMinutes(),
     };
-    // Add your message handling logic here
-    if (currentUser) {
+    console.log("Adding new message", currentChatMessage);
+    if (currentUser && currentChatMessage.trim() !== "") {
       socket.emit("newChatMessage", {
         currentChatMessage,
         groupIdentifier: currentGroupID,
@@ -64,19 +68,23 @@ export default function Messages({ navigation, route }) {
     <View style={styles.mainWrapper}>
       <View style={styles.topContainer}>
         <View style={styles.heading}>
-          <ThemedText style={styles.text}>Chat</ThemedText>
+          <ThemedText style={styles.headingText}>{currentGroupName}</ThemedText>
           <Pressable style={{ paddingTop: 30 }}></Pressable>
         </View>
       </View>
       <View style={styles.listContainer}>
-        {/* {allChatRooms && allChatRooms.length > 0 ? (
+        {allChatMessages && allChatMessages[0] ? (
           <FlatList
-            data={allChatRooms}
-            renderItem={({ item }) => <ChatComponent item={item} />}
+            data={allChatMessages}
+            renderItem={({ item }) => (
+              <MessageComponent currentUser={currentUser} item={item} />
+            )}
             keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={styles.messagesContainer}
           />
-        ) : null} */}
-        <ThemedText>Messages will show here</ThemedText>
+        ) : (
+          <ThemedText>Messages will show here</ThemedText>
+        )}
       </View>
       <View style={styles.bottomContainer}>
         <TextInput
@@ -86,9 +94,7 @@ export default function Messages({ navigation, route }) {
           placeholder="Enter your message"
         />
         <Pressable onPress={handleAddNewMessage} style={styles.button}>
-          <View>
-            <Text style={styles.buttonText}>Send</Text>
-          </View>
+          <Text style={styles.buttonText}>SEND</Text>
         </Pressable>
       </View>
     </View>
@@ -116,6 +122,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
+  },
+  headingText: {
+    color: "white",
+    fontSize: width * 0.04,
+    fontWeight: "bold",
+    paddingTop: height * 0.03,
   },
   text: {
     color: "white",
