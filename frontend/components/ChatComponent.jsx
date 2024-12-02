@@ -3,9 +3,10 @@ import { FontAwesome } from "@expo/vector-icons";
 import { useContext, useEffect, useState } from "react";
 import { GlobalContext } from "../context";
 import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 export default function Chatcomponent({ item }) {
-  const navigation = useNavigation();
+  const router = useRouter();
   const [currentItem, setCurrentItem] = useState(item);
 
   useEffect(() => {
@@ -15,12 +16,14 @@ export default function Chatcomponent({ item }) {
   console.log("Chat component item: ", item);
 
   function handleNavigateToMessageScreen() {
-    navigation.navigate("messages", {
-      currentGroupName: item.groupName,
-      currentGroupID: item.id,
+    router.push({
+      pathname: "/messages",
+      params: {
+        currentGroupName: item.groupName,
+        currentGroupID: item.id,
+      },
     });
   }
-
   return (
     <Pressable style={styles.chat} onPress={handleNavigateToMessageScreen}>
       <View style={styles.circle}>

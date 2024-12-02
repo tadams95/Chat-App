@@ -128,7 +128,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "90",
     padding: width * 0.05,
-    backgroundColor: "green",
     alignItems: "center",
     marginBottom: height * 0.075,
   },
