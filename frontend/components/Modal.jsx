@@ -22,7 +22,7 @@ const NewGroupModal = () => {
   } = useContext(GlobalContext);
 
   function handleCreateNewRoom() {
-    console.log(currentGroupName);
+    // console.log(currentGroupName);
     socket.emit("createRoom", currentGroupName);
     setModalVisible(false);
     setCurrentGroupName("");

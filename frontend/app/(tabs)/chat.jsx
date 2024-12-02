@@ -36,7 +36,7 @@ export default function Chat() {
     socket.emit("getAllGroups");
 
     socket.on("groupList", (groups) => {
-      console.log(groups);
+      // console.log(groups);
       setAllChatRooms(groups);
     });
 

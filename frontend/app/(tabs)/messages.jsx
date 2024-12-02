@@ -39,6 +39,10 @@ export default function Messages() {
     };
   }, [currentGroupID]);
 
+  useEffect(() => {
+    console.log("All chat messages updated: ", allChatMessages);
+  }, [allChatMessages]);
+
   function handleAddNewMessage() {
     const timeData = {
       hr:
@@ -50,7 +54,7 @@ export default function Messages() {
           ? `0${new Date().getMinutes()}`
           : new Date().getMinutes(),
     };
-    console.log("Adding new message", currentChatMessage);
+    // console.log("Adding new message", currentChatMessage);
     if (currentUser && currentChatMessage.trim() !== "") {
       socket.emit("newChatMessage", {
         currentChatMessage,

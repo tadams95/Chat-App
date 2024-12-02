@@ -13,7 +13,7 @@ function createUniqueId() {
 }
 
 io.on("connection", (socket) => {
-  console.log("A user connected");
+  // console.log("A user connected");
 
   socket.emit("groupList", chatgroups);
 
@@ -22,7 +22,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("createRoom", (groupName) => {
-    console.log(`New group created: ${groupName}`);
+    // console.log(`New group created: ${groupName}`);
     chatgroups.unshift({
       id: chatgroups.length + 1,
       groupName,
@@ -36,6 +36,7 @@ io.on("connection", (socket) => {
       (item) => item.id === parseInt(groupID, 10)
     );
     if (group.length > 0) {
+      socket.join(group[0].groupName); // Join the socket to the group room
       socket.emit("foundGroup", group[0].messages);
     } else {
       socket.emit("error", { message: "Group not found" });
@@ -48,8 +49,8 @@ io.on("connection", (socket) => {
       (item) => item.id === parseInt(groupIdentifier, 10)
     );
 
-    console.log("New Chat Message Data: ", data);
-    console.log("Filtered Group: ", filteredGroup);
+    // console.log("New Chat Message Data: ", data);
+    // console.log("Filtered Group: ", filteredGroup);
     if (filteredGroup.length > 0) {
       const newMessage = {
         id: createUniqueId(),
@@ -59,20 +60,18 @@ io.on("connection", (socket) => {
       };
 
       filteredGroup[0].messages.push(newMessage);
-      console.log(
-        `New message added to group ${filteredGroup[0].groupName}:`,
-        newMessage
-      );
-      io.to(filteredGroup[0].groupName).emit("groupMessage", newMessage);
-      socket.emit("groupList", chatgroups);
-      socket.emit("foundGroup", filteredGroup[0].messages);
+      // console.log(
+      //   `New message added to group ${filteredGroup[0].groupName}:`,
+      //   newMessage
+      // );
+      io.to(filteredGroup[0].groupName).emit("groupMessage", newMessage); // Broadcast to all clients in the group
     } else {
       socket.emit("error", { message: "Group not found" });
     }
   });
 
   socket.on("disconnect", () => {
-    console.log("A user disconnected");
+    // console.log("A user disconnected");
   });
 });
 

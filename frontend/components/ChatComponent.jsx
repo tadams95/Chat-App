@@ -13,7 +13,7 @@ export default function ChatComponent({ item }) {
     setCurrentItem(item);
   }, [item]);
 
-  console.log("Chat component item: ", item);
+  // console.log("Chat component item: ", item);
 
   function handleNavigateToMessageScreen() {
     router.push({
